@@ -40,19 +40,19 @@
 
   .label {
     position: absolute;
-    font-size: 9px;
+    font-size: 11px;
     font-family: "Noto Sans", sans-serif;
     font-weight: 700;
     pointer-events: none; // To prevent interference with any interactions
 
     &.bottom {
-      bottom: 2px;
+      bottom: 0px;
       left: 4px;
     }
 
     &.right {
       top: 2px;
-      right: 4px;
+      right: 2px;
     }
 
     &.label-light {
@@ -62,5 +62,14 @@
     &.label-dark {
       color: rgb(148, 111, 81);
     }
+  }
+
+  .circle-overlay {
+    position: absolute;
+    width: 90%;
+    height: 90%;
+    border: 3px solid rgba(0, 128, 0, 0.6);
+    border-radius: 50%;
+    pointer-events: none;
   }
 }
