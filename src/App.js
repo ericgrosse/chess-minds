@@ -15,15 +15,21 @@ function App() {
   const [overlay, setOverlay] = useState(initialOverlayState);
 
   const handleRightClick = (e, square) => {
-    e.preventDefault();
-    setOverlay(prevOverlay => ({
-      ...prevOverlay,
-      [square]: !prevOverlay[square]
-    }));
+    e.preventDefault(); // Prevents the default context menu from appearing
   };
 
   const handleLeftClick = () => {
     setOverlay(initialOverlayState);
+  };
+
+  const handleMouseDown = (e, square) => {
+    if (e.button === 2) { // Right mouse button
+      e.preventDefault();
+      setOverlay(prevOverlay => ({
+        ...prevOverlay,
+        [square]: true
+      }));
+    }
   };
 
   return (
@@ -41,6 +47,7 @@ function App() {
                   key={squareKey} 
                   className={squareClass}
                   onContextMenu={(e) => handleRightClick(e, squareKey)}
+                  onMouseDown={(e) => handleMouseDown(e, squareKey)}
                 >
                   {(row === 1 && col === 'h') && (
                     <>
