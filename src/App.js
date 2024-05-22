@@ -55,11 +55,13 @@ function App() {
       const boardRect = boardRef.current.getBoundingClientRect();
       const x = e.clientX - boardRect.left;
       const y = e.clientY - boardRect.top;
-      const col = columns[Math.floor(x / (boardRect.width / 8))];
-      const row = rows[Math.floor(y / (boardRect.height / 8))];
-      const endSquare = `${col}${row}`;
-      if (currentLine) {
-        setCurrentLine({ ...currentLine, end: endSquare });
+      if (x >= 0 && x <= boardRect.width && y >= 0 && y <= boardRect.height) {
+        const col = columns[Math.floor(x / (boardRect.width / 8))];
+        const row = rows[Math.floor(y / (boardRect.height / 8))];
+        const endSquare = `${col}${row}`;
+        if (currentLine) {
+          setCurrentLine({ ...currentLine, end: endSquare });
+        }
       }
     }
   };
