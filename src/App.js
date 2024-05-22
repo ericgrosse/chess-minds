@@ -27,7 +27,7 @@ function App() {
       e.preventDefault();
       setOverlay(prevOverlay => ({
         ...prevOverlay,
-        [square]: true
+        [square]: !prevOverlay[square] // Toggle the circle overlay
       }));
     }
   };
