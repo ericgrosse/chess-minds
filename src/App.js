@@ -61,10 +61,16 @@ function App() {
         const endSquare = `${col}${row}`;
         if (currentLine) {
           setCurrentLine({ ...currentLine, end: endSquare });
+          if (currentLine.start !== endSquare) {
+            setOverlay(prevOverlay => ({
+              ...prevOverlay,
+              [currentLine.start]: false
+            }));
+          }
         }
       }
     }
-  };
+  };  
 
   const getSquareCenter = (square) => {
     const col = columns.indexOf(square[0]);
