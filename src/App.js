@@ -76,8 +76,15 @@ function App() {
   };
 
   return (
-    <div className="App" onClick={handleLeftClick} onContextMenu={handleRightClick} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp}>
-      <div className="chess-board" ref={boardRef}>
+    <div className="App">
+      <div
+        className="chess-board"
+        ref={boardRef}
+        onClick={handleLeftClick}
+        onContextMenu={handleRightClick}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
         <div className="board">
           {rows.map((row, rowIndex) =>
             columns.map((col, colIndex) => {
