@@ -51,7 +51,15 @@ function App() {
 
   const handleSquareClick = (square) => {
     if (legalMoves.includes(square)) {
-      chess.current.move({ from: sourceSquare, to: square });
+      const moveOptions = { from: sourceSquare, to: square };
+      
+      // Detect pawn promotion
+      const piece = chess.current.get(sourceSquare);
+      if (piece && piece.type === 'p' && (square[1] === '8' || square[1] === '1')) {
+        moveOptions.promotion = 'q'; // Automatically promote to a queen
+      }
+
+      chess.current.move(moveOptions);
       setCurrentPosition(chess.current.fen());
   
       // Check for game state after the move
