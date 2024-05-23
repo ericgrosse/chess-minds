@@ -53,14 +53,23 @@ function App() {
     if (legalMoves.includes(square)) {
       chess.current.move({ from: sourceSquare, to: square });
       setCurrentPosition(chess.current.fen());
+  
+      // Check for game state after the move
+      if (chess.current.isCheckmate()) {
+        alert('Checkmate');
+      } else if (chess.current.isStalemate()) {
+        alert('Stalemate');
+      } else if (chess.current.isCheck()) {
+        alert('Check');
+      }
     }
-
+  
     setLegalMoves([]);
     setSourceSquare(null);
     setOverlay(initialOverlayState);
     setLines([]);
     setCurrentLine(null);
-  };
+  };  
 
   const handlePieceClick = (e, square) => {
     e.stopPropagation();
