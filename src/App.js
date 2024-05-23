@@ -149,10 +149,12 @@ function App() {
     const isLightSquare = (row + columns.indexOf(col)) % 2 === 0;
     const squareClass = isLightSquare ? 'square light' : 'square dark';
     const labelColor = isLightSquare ? 'label-dark' : 'label-light';
+    const squareKey = `${col}${row}`;
     return (
       <div
-        key={square}
+        key={squareKey}
         className={squareClass}
+        onMouseDown={(e) => handleMouseDown(e, squareKey)}
         onClick={() => handleSquareClick(square)}
       >
         {(row === 1 && col === 'h') && (
