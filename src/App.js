@@ -1,5 +1,17 @@
 import React, { useState, useRef } from 'react';
 import './App.scss';
+import whitePawn from './images/white-pawn.svg';
+import whiteKnight from './images/white-knight.svg';
+import whiteBishop from './images/white-bishop.svg';
+import whiteRook from './images/white-rook.svg';
+import whiteQueen from './images/white-queen.svg';
+import whiteKing from './images/white-king.svg';
+import blackPawn from './images/black-pawn.svg';
+import blackKnight from './images/black-knight.svg';
+import blackBishop from './images/black-bishop.svg';
+import blackRook from './images/black-rook.svg';
+import blackQueen from './images/black-queen.svg';
+import blackKing from './images/black-king.svg';
 
 function App() {
   const rows = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -11,6 +23,18 @@ function App() {
     });
     return acc;
   }, {});
+
+  const initialPieces = {
+    'a1': 'white-rook', 'b1': 'white-knight', 'c1': 'white-bishop', 'd1': 'white-queen', 'e1': 'white-king', 'f1': 'white-bishop', 'g1': 'white-knight', 'h1': 'white-rook',
+    'a2': 'white-pawn', 'b2': 'white-pawn', 'c2': 'white-pawn', 'd2': 'white-pawn', 'e2': 'white-pawn', 'f2': 'white-pawn', 'g2': 'white-pawn', 'h2': 'white-pawn',
+    'a7': 'black-pawn', 'b7': 'black-pawn', 'c7': 'black-pawn', 'd7': 'black-pawn', 'e7': 'black-pawn', 'f7': 'black-pawn', 'g7': 'black-pawn', 'h7': 'black-pawn',
+    'a8': 'black-rook', 'b8': 'black-knight', 'c8': 'black-bishop', 'd8': 'black-queen', 'e8': 'black-king', 'f8': 'black-bishop', 'g8': 'black-knight', 'h8': 'black-rook',
+  };
+
+  const pieceImages = {
+    'white-pawn': whitePawn, 'white-knight': whiteKnight, 'white-bishop': whiteBishop, 'white-rook': whiteRook, 'white-queen': whiteQueen, 'white-king': whiteKing,
+    'black-pawn': blackPawn, 'black-knight': blackKnight, 'black-bishop': blackBishop, 'black-rook': blackRook, 'black-queen': blackQueen, 'black-king': blackKing,
+  };
 
   const [overlay, setOverlay] = useState(initialOverlayState);
   const [lines, setLines] = useState([]);
@@ -70,7 +94,7 @@ function App() {
         }
       }
     }
-  };  
+  };
 
   const getSquareCenter = (square) => {
     const col = columns.indexOf(square[0]);
@@ -98,6 +122,8 @@ function App() {
               const squareClass = isLightSquare ? 'square light' : 'square dark';
               const labelColor = isLightSquare ? 'label-dark' : 'label-light';
               const squareKey = `${col}${row}`;
+              const piece = initialPieces[squareKey];
+
               return (
                 <div 
                   key={squareKey} 
@@ -116,6 +142,7 @@ function App() {
                   {(col === 'h' && row !== 1) && (
                     <span className={`label right ${labelColor}`}>{row}</span>
                   )}
+                  {piece && <img src={pieceImages[piece]} alt={piece} className="chess-piece" />}
                   {overlay[squareKey] && <div className="circle-overlay"></div>}
                 </div>
               );
