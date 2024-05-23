@@ -112,7 +112,8 @@ function App() {
     };
   };
 
-  const handlePieceClick = (square) => {
+  const handlePieceClick = (e, square) => {
+    e.stopPropagation();
     const moves = chess.current.moves({ square, verbose: true });
     setLegalMoves(moves.map(move => move.to));
   };
@@ -163,7 +164,7 @@ function App() {
                       src={pieceImages[piece]}
                       alt={piece}
                       className="chess-piece"
-                      onClick={() => handlePieceClick(squareKey)}
+                      onClick={(e) => handlePieceClick(e, squareKey)}
                     />
                   )}
                   {overlay[squareKey] && <div className="circle-overlay"></div>}
