@@ -70,6 +70,9 @@ function App() {
       setSourceSquare(square);
       setLegalMoves(moves.map(move => move.to));
     }
+    setOverlay(initialOverlayState);
+    setLines([]);
+    setCurrentLine(null);
   };
 
   const handleMouseDown = (e, square) => {
