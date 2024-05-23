@@ -42,6 +42,8 @@ function App() {
   const [dragging, setDragging] = useState(false);
   const [currentLine, setCurrentLine] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
+  const [sourceSquare, setSourceSquare] = useState(null);
+  const [targetSquare, setTargetSquare] = useState(null);
   const chess = useRef(new Chess()); // Initialize chess.js
   const boardRef = useRef(null);
 
@@ -49,14 +51,26 @@ function App() {
     e.preventDefault(); // Prevents the default context menu from appearing
   };
 
-  const handleLeftClick = (square) => {
-    const piece = initialPieces[square];
-    if (!piece) {
-      setLegalMoves([]);
+  const handleSquareClick = (square) => {
+    if (legalMoves.includes(square)) {
+      chess.current.move({ from: sourceSquare, to: square });
     }
+
+    setLegalMoves([]);
+    setSourceSquare(null);
     setOverlay(initialOverlayState);
     setLines([]);
     setCurrentLine(null);
+  };
+
+  const handlePieceClick = (e, square) => {
+    e.stopPropagation();
+    const piece = initialPieces[square];
+    if (piece && piece[0] === chess.current.turn()) {
+      setSourceSquare(square);
+      const moves = chess.current.moves({ square, verbose: true });
+      setLegalMoves(moves.map(move => move.to));
+    }
   };
 
   const handleMouseDown = (e, square) => {
@@ -112,12 +126,6 @@ function App() {
     };
   };
 
-  const handlePieceClick = (e, square) => {
-    e.stopPropagation();
-    const moves = chess.current.moves({ square, verbose: true });
-    setLegalMoves(moves.map(move => move.to));
-  };
-
   const isLegalMove = (square) => {
     return legalMoves.includes(square);
   };
@@ -145,7 +153,7 @@ function App() {
                   key={squareKey} 
                   className={squareClass}
                   onMouseDown={(e) => handleMouseDown(e, squareKey)}
-                  onClick={() => handleLeftClick(squareKey)}
+                  onClick={() => handleSquareClick(squareKey)}
                 >
                   {(row === 1 && col === 'h') && (
                     <>
