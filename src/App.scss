@@ -75,6 +75,13 @@
     pointer-events: none;
   }
 
+  .legal-move-overlay {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(rgba(20, 85, 30, 0.5) 19%, rgba(0, 0, 0, 0) 20%);
+  }
+
   .line-overlay {
     position: absolute;
     top: 0;

@@ -12,6 +12,7 @@ import blackBishop from './images/black-bishop.svg';
 import blackRook from './images/black-rook.svg';
 import blackQueen from './images/black-queen.svg';
 import blackKing from './images/black-king.svg';
+import { Chess } from 'chess.js';
 
 function App() {
   const rows = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -40,6 +41,8 @@ function App() {
   const [lines, setLines] = useState([]);
   const [dragging, setDragging] = useState(false);
   const [currentLine, setCurrentLine] = useState(null);
+  const [legalMoves, setLegalMoves] = useState([]);
+  const chess = useRef(new Chess()); // Initialize chess.js
   const boardRef = useRef(null);
 
   const handleRightClick = (e) => {
@@ -105,6 +108,15 @@ function App() {
     };
   };
 
+  const handlePieceClick = (square) => {
+    const moves = chess.current.moves({ square, verbose: true });
+    setLegalMoves(moves.map(move => move.to));
+  };
+
+  const isLegalMove = (square) => {
+    return legalMoves.includes(square);
+  };
+
   return (
     <div className="App">
       <div
@@ -142,8 +154,16 @@ function App() {
                   {(col === 'h' && row !== 1) && (
                     <span className={`label right ${labelColor}`}>{row}</span>
                   )}
-                  {piece && <img src={pieceImages[piece]} alt={piece} className="chess-piece" />}
+                  {piece && (
+                    <img
+                      src={pieceImages[piece]}
+                      alt={piece}
+                      className="chess-piece"
+                      onClick={() => handlePieceClick(squareKey)}
+                    />
+                  )}
                   {overlay[squareKey] && <div className="circle-overlay"></div>}
+                  {isLegalMove(squareKey) && <div className="legal-move-overlay"></div>}
                 </div>
               );
             })
