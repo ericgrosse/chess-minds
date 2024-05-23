@@ -26,15 +26,15 @@ function App() {
   }, {});
 
   const initialPieces = {
-    'a1': 'white-rook', 'b1': 'white-knight', 'c1': 'white-bishop', 'd1': 'white-queen', 'e1': 'white-king', 'f1': 'white-bishop', 'g1': 'white-knight', 'h1': 'white-rook',
-    'a2': 'white-pawn', 'b2': 'white-pawn', 'c2': 'white-pawn', 'd2': 'white-pawn', 'e2': 'white-pawn', 'f2': 'white-pawn', 'g2': 'white-pawn', 'h2': 'white-pawn',
-    'a7': 'black-pawn', 'b7': 'black-pawn', 'c7': 'black-pawn', 'd7': 'black-pawn', 'e7': 'black-pawn', 'f7': 'black-pawn', 'g7': 'black-pawn', 'h7': 'black-pawn',
-    'a8': 'black-rook', 'b8': 'black-knight', 'c8': 'black-bishop', 'd8': 'black-queen', 'e8': 'black-king', 'f8': 'black-bishop', 'g8': 'black-knight', 'h8': 'black-rook',
+    'a1': 'w-r', 'b1': 'w-n', 'c1': 'w-b', 'd1': 'w-q', 'e1': 'w-k', 'f1': 'w-b', 'g1': 'w-n', 'h1': 'w-r',
+    'a2': 'w-p', 'b2': 'w-p', 'c2': 'w-p', 'd2': 'w-p', 'e2': 'w-p', 'f2': 'w-p', 'g2': 'w-p', 'h2': 'w-p',
+    'a7': 'b-p', 'b7': 'b-p', 'c7': 'b-p', 'd7': 'b-p', 'e7': 'b-p', 'f7': 'b-p', 'g7': 'b-p', 'h7': 'b-p',
+    'a8': 'b-r', 'b8': 'b-n', 'c8': 'b-b', 'd8': 'b-q', 'e8': 'b-k', 'f8': 'b-b', 'g8': 'b-n', 'h8': 'b-r',
   };
 
   const pieceImages = {
-    'white-pawn': whitePawn, 'white-knight': whiteKnight, 'white-bishop': whiteBishop, 'white-rook': whiteRook, 'white-queen': whiteQueen, 'white-king': whiteKing,
-    'black-pawn': blackPawn, 'black-knight': blackKnight, 'black-bishop': blackBishop, 'black-rook': blackRook, 'black-queen': blackQueen, 'black-king': blackKing,
+    'w-p': whitePawn, 'w-n': whiteKnight, 'w-b': whiteBishop, 'w-r': whiteRook, 'w-q': whiteQueen, 'w-k': whiteKing,
+    'b-p': blackPawn, 'b-n': blackKnight, 'b-b': blackBishop, 'b-r': blackRook, 'b-q': blackQueen, 'b-k': blackKing,
   };
 
   const [overlay, setOverlay] = useState(initialOverlayState);
