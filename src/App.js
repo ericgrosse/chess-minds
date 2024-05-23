@@ -15,6 +15,7 @@ import blackKing from './images/black-king.svg';
 import { Chess } from 'chess.js';
 
 function App() {
+  /* Setup for state initialization */
   const rows = [8, 7, 6, 5, 4, 3, 2, 1];
   const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
@@ -25,27 +26,24 @@ function App() {
     return acc;
   }, {});
 
-  const initialPieces = {
-    'a1': 'w-r', 'b1': 'w-n', 'c1': 'w-b', 'd1': 'w-q', 'e1': 'w-k', 'f1': 'w-b', 'g1': 'w-n', 'h1': 'w-r',
-    'a2': 'w-p', 'b2': 'w-p', 'c2': 'w-p', 'd2': 'w-p', 'e2': 'w-p', 'f2': 'w-p', 'g2': 'w-p', 'h2': 'w-p',
-    'a7': 'b-p', 'b7': 'b-p', 'c7': 'b-p', 'd7': 'b-p', 'e7': 'b-p', 'f7': 'b-p', 'g7': 'b-p', 'h7': 'b-p',
-    'a8': 'b-r', 'b8': 'b-n', 'c8': 'b-b', 'd8': 'b-q', 'e8': 'b-k', 'f8': 'b-b', 'g8': 'b-n', 'h8': 'b-r',
-  };
+  const chess = useRef(new Chess());
+  const boardRef = useRef(null);
 
-  const pieceImages = {
-    'w-p': whitePawn, 'w-n': whiteKnight, 'w-b': whiteBishop, 'w-r': whiteRook, 'w-q': whiteQueen, 'w-k': whiteKing,
-    'b-p': blackPawn, 'b-n': blackKnight, 'b-b': blackBishop, 'b-r': blackRook, 'b-q': blackQueen, 'b-k': blackKing,
-  };
-
+  /* State initialization */
   const [overlay, setOverlay] = useState(initialOverlayState);
   const [lines, setLines] = useState([]);
   const [dragging, setDragging] = useState(false);
   const [currentLine, setCurrentLine] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
   const [sourceSquare, setSourceSquare] = useState(null);
-  const [targetSquare, setTargetSquare] = useState(null);
-  const chess = useRef(new Chess()); // Initialize chess.js
-  const boardRef = useRef(null);
+  const [currentPosition, setCurrentPosition] = useState(chess.current.fen());
+
+  const pieceImages = {
+    'w-p': whitePawn, 'w-n': whiteKnight, 'w-b': whiteBishop, 'w-r': whiteRook, 'w-q': whiteQueen, 'w-k': whiteKing,
+    'b-p': blackPawn, 'b-n': blackKnight, 'b-b': blackBishop, 'b-r': blackRook, 'b-q': blackQueen, 'b-k': blackKing,
+  };
+
+  /* Event handlers */
 
   const handleRightClick = (e) => {
     e.preventDefault(); // Prevents the default context menu from appearing
@@ -54,6 +52,7 @@ function App() {
   const handleSquareClick = (square) => {
     if (legalMoves.includes(square)) {
       chess.current.move({ from: sourceSquare, to: square });
+      setCurrentPosition(chess.current.fen());
     }
 
     setLegalMoves([]);
@@ -65,10 +64,10 @@ function App() {
 
   const handlePieceClick = (e, square) => {
     e.stopPropagation();
-    const piece = initialPieces[square];
-    if (piece && piece[0] === chess.current.turn()) {
-      setSourceSquare(square);
+    const piece = chess.current.get(square);
+    if (piece && piece.color === chess.current.turn()) {
       const moves = chess.current.moves({ square, verbose: true });
+      setSourceSquare(square);
       setLegalMoves(moves.map(move => move.to));
     }
   };
@@ -130,6 +129,51 @@ function App() {
     return legalMoves.includes(square);
   };
 
+  const renderPiece = (square) => {
+    const piece = chess.current.get(square);
+    if (piece) {
+      return (
+        <img
+          src={pieceImages[piece.color + '-' + piece.type]}
+          alt={piece}
+          className="chess-piece"
+          onClick={(e) => handlePieceClick(e, square)}
+        />
+      );
+    }
+    return null;
+  };
+
+  const renderSquare = (row, col) => {
+    const square = `${col}${row}`;
+    const isLightSquare = (row + columns.indexOf(col)) % 2 === 0;
+    const squareClass = isLightSquare ? 'square light' : 'square dark';
+    const labelColor = isLightSquare ? 'label-dark' : 'label-light';
+    return (
+      <div
+        key={square}
+        className={squareClass}
+        onClick={() => handleSquareClick(square)}
+      >
+        {(row === 1 && col === 'h') && (
+          <>
+            <span className={`label bottom ${labelColor}`}>{col}</span>
+            <span className={`label right ${labelColor}`}>{row}</span>
+          </>
+        )}
+        {(row === 1 && col !== 'h') && (
+          <span className={`label bottom ${labelColor}`}>{col}</span>
+        )}
+        {(col === 'h' && row !== 1) && (
+          <span className={`label right ${labelColor}`}>{row}</span>
+        )}
+        {renderPiece(square)}
+        {overlay[square] && <div className="circle-overlay"></div>}
+        {isLegalMove(square) && <div className="legal-move-overlay"></div>}
+      </div>
+    );
+  };
+
   return (
     <div className="App">
       <div
@@ -142,43 +186,7 @@ function App() {
         <div className="board">
           {rows.map((row, rowIndex) =>
             columns.map((col, colIndex) => {
-              const isLightSquare = (rowIndex + colIndex) % 2 === 0;
-              const squareClass = isLightSquare ? 'square light' : 'square dark';
-              const labelColor = isLightSquare ? 'label-dark' : 'label-light';
-              const squareKey = `${col}${row}`;
-              const piece = initialPieces[squareKey];
-
-              return (
-                <div 
-                  key={squareKey} 
-                  className={squareClass}
-                  onMouseDown={(e) => handleMouseDown(e, squareKey)}
-                  onClick={() => handleSquareClick(squareKey)}
-                >
-                  {(row === 1 && col === 'h') && (
-                    <>
-                      <span className={`label bottom ${labelColor}`}>{col}</span>
-                      <span className={`label right ${labelColor}`}>{row}</span>
-                    </>
-                  )}
-                  {(row === 1 && col !== 'h') && (
-                    <span className={`label bottom ${labelColor}`}>{col}</span>
-                  )}
-                  {(col === 'h' && row !== 1) && (
-                    <span className={`label right ${labelColor}`}>{row}</span>
-                  )}
-                  {piece && (
-                    <img
-                      src={pieceImages[piece]}
-                      alt={piece}
-                      className="chess-piece"
-                      onClick={(e) => handlePieceClick(e, squareKey)}
-                    />
-                  )}
-                  {overlay[squareKey] && <div className="circle-overlay"></div>}
-                  {isLegalMove(squareKey) && <div className="legal-move-overlay"></div>}
-                </div>
-              );
+              return renderSquare(row, col);
             })
           )}
           <svg className="line-overlay">
@@ -213,7 +221,7 @@ function App() {
         </div>
       </div>
     </div>
-  );
+  );  
 }
 
 export default App;
