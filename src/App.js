@@ -49,7 +49,11 @@ function App() {
     e.preventDefault(); // Prevents the default context menu from appearing
   };
 
-  const handleLeftClick = () => {
+  const handleLeftClick = (square) => {
+    const piece = initialPieces[square];
+    if (!piece) {
+      setLegalMoves([]);
+    }
     setOverlay(initialOverlayState);
     setLines([]);
     setCurrentLine(null);
@@ -122,7 +126,6 @@ function App() {
       <div
         className="chess-board"
         ref={boardRef}
-        onClick={handleLeftClick}
         onContextMenu={handleRightClick}
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
@@ -141,6 +144,7 @@ function App() {
                   key={squareKey} 
                   className={squareClass}
                   onMouseDown={(e) => handleMouseDown(e, squareKey)}
+                  onClick={() => handleLeftClick(squareKey)}
                 >
                   {(row === 1 && col === 'h') && (
                     <>
