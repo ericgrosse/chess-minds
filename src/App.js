@@ -195,6 +195,22 @@ function App() {
     return legalMoves.includes(square);
   };
 
+  const handleDragStart = (e, square) => {
+    handlePieceClick(e, square);
+  };
+
+  const handleDragOver = (e, square) => {
+    e.preventDefault();
+  };
+
+  const handleDrop = (e, square) => {
+      e.preventDefault();
+      e.stopPropagation();
+      if (legalMoves.includes(square)) {
+          handleSquareClick(square);
+      }
+  };
+
   const renderPiece = (square) => {
     const piece = chess.current.get(square);
     if (piece) {
@@ -204,6 +220,10 @@ function App() {
           alt={piece}
           className="chess-piece"
           onClick={(e) => handlePieceClick(e, square)}
+          draggable="true"
+          onDragStart={(e) => handleDragStart(e, square)}
+          onDragOver={(e) => handleDragOver(e, square)}
+          onDrop={(e) => handleDrop(e, square)}
         />
       );
     }
@@ -228,6 +248,8 @@ function App() {
         className={squareClass}
         onMouseDown={(e) => handleMouseDown(e, square)}
         onClick={() => handleSquareClick(square)}
+        onDragOver={(e) => handleDragOver(e, square)}
+        onDrop={(e) => handleDrop(e, square)}
       >
         {(row === 1 && col === 'h') && (
           <>
