@@ -42,7 +42,6 @@ function App() {
   const [sourceSquare, setSourceSquare] = useState(null);
   const [fromSquare, setFromSquare] = useState(null);
   const [toSquare, setToSquare] = useState(null);
-  const [currentPosition, setCurrentPosition] = useState(chess.current.fen());
   const [potentialCaptures, setPotentialCaptures] = useState([]);
 
   const pieceImages = {
@@ -67,7 +66,6 @@ function App() {
       }
 
       const moveResult = chess.current.move(moveOptions);
-      setCurrentPosition(chess.current.fen());
       
       if (moveResult.captured) {
         captureAudio.play();
@@ -84,11 +82,12 @@ function App() {
       } else if (chess.current.isCheck()) {
         alert('Check');
       }
+
+      setFromSquare(sourceSquare);
+      setToSquare(square);
     }
   
     setLegalMoves([]);
-    setFromSquare(sourceSquare);
-    setToSquare(square);
     setSourceSquare(null);
     setOverlay(initialOverlayState);
     setLines([]);
