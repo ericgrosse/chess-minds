@@ -12,9 +12,14 @@ import blackBishop from './images/black-bishop.svg';
 import blackRook from './images/black-rook.svg';
 import blackQueen from './images/black-queen.svg';
 import blackKing from './images/black-king.svg';
+import moveSound from './audio/move.mp3';
 import { Chess } from 'chess.js';
 
 function App() {
+  const chess = useRef(new Chess());
+  const boardRef = useRef(null);
+  const moveAudio = new Audio(moveSound);
+
   /* Setup for state initialization */
   const rows = [8, 7, 6, 5, 4, 3, 2, 1];
   const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
@@ -25,9 +30,6 @@ function App() {
     });
     return acc;
   }, {});
-
-  const chess = useRef(new Chess());
-  const boardRef = useRef(null);
 
   /* State initialization */
   const [overlay, setOverlay] = useState(initialOverlayState);
@@ -61,6 +63,7 @@ function App() {
 
       chess.current.move(moveOptions);
       setCurrentPosition(chess.current.fen());
+      moveAudio.play();
   
       // Check for game state after the move
       if (chess.current.isCheckmate()) {
