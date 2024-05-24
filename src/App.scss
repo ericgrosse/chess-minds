@@ -38,10 +38,18 @@
   
   .light {
     background-color: #f0d9b5;
+
+    &.selected {
+      background-color: #829769;
+    }
   }
   
   .dark {
     background-color: #b58863;
+
+    &.selected {
+      background-color: #646F40;
+    }
   }
 
   .label {

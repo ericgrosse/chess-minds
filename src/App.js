@@ -143,6 +143,7 @@ function App() {
       }));
       setLegalMoves([]);
       setPotentialCaptures([]);
+      setSourceSquare(null); // Clears the selected class of a selected square
     }
   };
 
@@ -209,8 +210,10 @@ function App() {
   const renderSquare = (row, col) => {
     const square = `${col}${row}`;
     const isLightSquare = (row + columns.indexOf(col)) % 2 === 0;
-    const squareClass = isLightSquare ? 'square light' : 'square dark';
+    const baseClass = isLightSquare ? 'light' : 'dark';
     const labelColor = isLightSquare ? 'label-dark' : 'label-light';
+    const isSelected = sourceSquare === square;
+    const squareClass = `square ${baseClass} ${isSelected ? 'selected' : ''}`;
     const squareKey = `${col}${row}`;
     
     return (
