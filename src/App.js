@@ -141,6 +141,8 @@ function App() {
         ...prevOverlay,
         [square]: !prevOverlay[square]
       }));
+      setLegalMoves([]);
+      setPotentialCaptures([]);
     }
   };
 
