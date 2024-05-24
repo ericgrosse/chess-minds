@@ -13,12 +13,14 @@ import blackRook from './images/black-rook.svg';
 import blackQueen from './images/black-queen.svg';
 import blackKing from './images/black-king.svg';
 import moveSound from './audio/move.mp3';
+import captureSound from './audio/capture.mp3';
 import { Chess } from 'chess.js';
 
 function App() {
   const chess = useRef(new Chess());
   const boardRef = useRef(null);
   const moveAudio = new Audio(moveSound);
+  const captureAudio = new Audio(captureSound);
 
   /* Setup for state initialization */
   const rows = [8, 7, 6, 5, 4, 3, 2, 1];
@@ -61,10 +63,16 @@ function App() {
         moveOptions.promotion = 'q'; // Automatically promote to a queen
       }
 
-      chess.current.move(moveOptions);
+      const moveResult = chess.current.move(moveOptions);
       setCurrentPosition(chess.current.fen());
-      moveAudio.play();
-  
+      
+      if (moveResult.captured) {
+        captureAudio.play();
+      }
+      else {
+        moveAudio.play();
+      }
+
       // Check for game state after the move
       if (chess.current.isCheckmate()) {
         alert('Checkmate');
