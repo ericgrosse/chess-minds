@@ -41,6 +41,7 @@ function App() {
   const [legalMoves, setLegalMoves] = useState([]);
   const [sourceSquare, setSourceSquare] = useState(null);
   const [currentPosition, setCurrentPosition] = useState(chess.current.fen());
+  const [potentialCaptures, setPotentialCaptures] = useState([]);
 
   const pieceImages = {
     'w-p': whitePawn, 'w-n': whiteKnight, 'w-b': whiteBishop, 'w-r': whiteRook, 'w-q': whiteQueen, 'w-k': whiteKing,
@@ -88,6 +89,7 @@ function App() {
     setOverlay(initialOverlayState);
     setLines([]);
     setCurrentLine(null);
+    setPotentialCaptures([]);
   };  
 
   const handlePieceClick = (e, square) => {
@@ -97,12 +99,35 @@ function App() {
       const moves = chess.current.moves({ square, verbose: true });
       setSourceSquare(square);
       setLegalMoves(moves.map(move => move.to));
+      const potentialCaptures = identifyPotentialCaptures(square);
+      setPotentialCaptures(potentialCaptures);
     }
     setOverlay(initialOverlayState);
     setLines([]);
     setCurrentLine(null);
   };
 
+  const identifyPotentialCaptures = (square) => {
+    const potentialCaptures = [];
+  
+    // Get possible moves for the selected piece
+    const possibleMoves = chess.current.moves({ square, verbose: true });
+  
+    // Iterate over possible moves
+    possibleMoves.forEach(move => {
+      const targetSquare = move.to;
+      const targetPiece = chess.current.get(targetSquare);
+  
+      // Check if the target square contains an opponent's piece
+      if (targetPiece && targetPiece.color !== chess.current.turn()) {
+        // Add the square to potential captures
+        potentialCaptures.push(targetSquare);
+      }
+    });
+  
+    return potentialCaptures;
+  };  
+  
   const handleMouseDown = (e, square) => {
     if (e.button === 2) { // Right mouse button
       e.preventDefault();
@@ -181,6 +206,7 @@ function App() {
     const squareClass = isLightSquare ? 'square light' : 'square dark';
     const labelColor = isLightSquare ? 'label-dark' : 'label-light';
     const squareKey = `${col}${row}`;
+    
     return (
       <div
         key={squareKey}
@@ -203,6 +229,7 @@ function App() {
         {renderPiece(square)}
         {overlay[square] && <div className="circle-overlay"></div>}
         {isLegalMove(square) && <div className="legal-move-overlay"></div>}
+        {potentialCaptures.includes(square) && <div className="potential-capture-overlay"></div>}
       </div>
     );
   };
