@@ -31,6 +31,10 @@
     justify-content: center;
     position: relative;
   }
+
+  .chess-piece {
+    z-index: 1; // Ensures the chess piece image is the topmost layer, import for event handlers
+  }
   
   .light {
     background-color: #f0d9b5;
@@ -106,6 +110,5 @@
     height: 100%;
     background: radial-gradient(transparent 0%, transparent 79%, rgba(20, 85, 0, 0.3) 80%);
     pointer-events: none;
-    z-index: 1;
   }
 }

@@ -102,6 +102,10 @@ function App() {
       const potentialCaptures = identifyPotentialCaptures(square);
       setPotentialCaptures(potentialCaptures);
     }
+    else {
+      // If clicking an opponent piece, propagate the handleSquareClick event to allow piece capturing
+      handleSquareClick(square);
+    }
     setOverlay(initialOverlayState);
     setLines([]);
     setCurrentLine(null);
