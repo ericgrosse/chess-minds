@@ -40,6 +40,8 @@ function App() {
   const [currentLine, setCurrentLine] = useState(null);
   const [legalMoves, setLegalMoves] = useState([]);
   const [sourceSquare, setSourceSquare] = useState(null);
+  const [fromSquare, setFromSquare] = useState(null);
+  const [toSquare, setToSquare] = useState(null);
   const [currentPosition, setCurrentPosition] = useState(chess.current.fen());
   const [potentialCaptures, setPotentialCaptures] = useState([]);
 
@@ -85,6 +87,8 @@ function App() {
     }
   
     setLegalMoves([]);
+    setFromSquare(sourceSquare);
+    setToSquare(square);
     setSourceSquare(null);
     setOverlay(initialOverlayState);
     setLines([]);
@@ -213,14 +217,17 @@ function App() {
     const baseClass = isLightSquare ? 'light' : 'dark';
     const labelColor = isLightSquare ? 'label-dark' : 'label-light';
     const isSelected = sourceSquare === square;
-    const squareClass = `square ${baseClass} ${isSelected ? 'selected' : ''}`;
-    const squareKey = `${col}${row}`;
+    let squareClass = `square ${baseClass} ${isSelected ? 'selected' : ''}`;
     
+    if (square === fromSquare || square === toSquare) {
+      squareClass += ` moved`;
+    }
+
     return (
       <div
-        key={squareKey}
+        key={square}
         className={squareClass}
-        onMouseDown={(e) => handleMouseDown(e, squareKey)}
+        onMouseDown={(e) => handleMouseDown(e, square)}
         onClick={() => handleSquareClick(square)}
       >
         {(row === 1 && col === 'h') && (

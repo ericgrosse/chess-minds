@@ -42,6 +42,10 @@
     &.selected {
       background-color: #829769;
     }
+
+    &.moved {
+      background-color: #CDD26A;
+    }
   }
   
   .dark {
@@ -49,6 +53,10 @@
 
     &.selected {
       background-color: #646F40;
+    }
+
+    &.moved {
+      background-color: #AAA23A;
     }
   }
 
