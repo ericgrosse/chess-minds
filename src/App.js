@@ -22,7 +22,6 @@ function App() {
   const moveAudio = new Audio(moveSound);
   const captureAudio = new Audio(captureSound);
 
-  /* Setup for state initialization */
   const rows = [8, 7, 6, 5, 4, 3, 2, 1];
   const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
 
@@ -33,7 +32,6 @@ function App() {
     return acc;
   }, {});
 
-  /* State initialization */
   const [overlay, setOverlay] = useState(initialOverlayState);
   const [lines, setLines] = useState([]);
   const [dragging, setDragging] = useState(false);
@@ -49,32 +47,27 @@ function App() {
     'b-p': blackPawn, 'b-n': blackKnight, 'b-b': blackBishop, 'b-r': blackRook, 'b-q': blackQueen, 'b-k': blackKing,
   };
 
-  /* Event handlers */
-
   const handleRightClick = (e) => {
-    e.preventDefault(); // Prevents the default context menu from appearing
+    e.preventDefault();
   };
 
   const handleSquareClick = (square) => {
     if (legalMoves.includes(square)) {
       const moveOptions = { from: sourceSquare, to: square };
       
-      // Detect pawn promotion
       const piece = chess.current.get(sourceSquare);
       if (piece && piece.type === 'p' && (square[1] === '8' || square[1] === '1')) {
-        moveOptions.promotion = 'q'; // Automatically promote to a queen
+        moveOptions.promotion = 'q';
       }
 
       const moveResult = chess.current.move(moveOptions);
       
       if (moveResult.captured) {
         captureAudio.play();
-      }
-      else {
+      } else {
         moveAudio.play();
       }
 
-      // Check for game state after the move
       if (chess.current.isCheckmate()) {
         alert('Checkmate');
       } else if (chess.current.isStalemate()) {
@@ -85,6 +78,7 @@ function App() {
 
       setFromSquare(sourceSquare);
       setToSquare(square);
+      handleAIMove();
     }
   
     setLegalMoves([]);
@@ -93,7 +87,7 @@ function App() {
     setLines([]);
     setCurrentLine(null);
     setPotentialCaptures([]);
-  };  
+  };
 
   const handlePieceClick = (e, square) => {
     e.stopPropagation();
@@ -104,9 +98,7 @@ function App() {
       setLegalMoves(moves.map(move => move.to));
       const potentialCaptures = identifyPotentialCaptures(square);
       setPotentialCaptures(potentialCaptures);
-    }
-    else {
-      // If clicking an opponent piece, propagate the handleSquareClick event to allow piece capturing
+    } else {
       handleSquareClick(square);
     }
     setOverlay(initialOverlayState);
@@ -116,27 +108,19 @@ function App() {
 
   const identifyPotentialCaptures = (square) => {
     const potentialCaptures = [];
-  
-    // Get possible moves for the selected piece
     const possibleMoves = chess.current.moves({ square, verbose: true });
-  
-    // Iterate over possible moves
     possibleMoves.forEach(move => {
       const targetSquare = move.to;
       const targetPiece = chess.current.get(targetSquare);
-  
-      // Check if the target square contains an opponent's piece
       if (targetPiece && targetPiece.color !== chess.current.turn()) {
-        // Add the square to potential captures
         potentialCaptures.push(targetSquare);
       }
     });
-  
     return potentialCaptures;
-  };  
-  
+  };
+
   const handleMouseDown = (e, square) => {
-    if (e.button === 2) { // Right mouse button
+    if (e.button === 2) {
       e.preventDefault();
       setDragging(true);
       setCurrentLine({ start: square, end: square });
@@ -146,7 +130,7 @@ function App() {
       }));
       setLegalMoves([]);
       setPotentialCaptures([]);
-      setSourceSquare(null); // Clears the selected class of a selected square
+      setSourceSquare(null);
     }
   };
 
@@ -204,11 +188,11 @@ function App() {
   };
 
   const handleDrop = (e, square) => {
-      e.preventDefault();
-      e.stopPropagation();
-      if (legalMoves.includes(square)) {
-          handleSquareClick(square);
-      }
+    e.preventDefault();
+    e.stopPropagation();
+    if (legalMoves.includes(square)) {
+      handleSquareClick(square);
+    }
   };
 
   const renderPiece = (square) => {
@@ -271,8 +255,36 @@ function App() {
     );
   };
 
+  const handleAIMove = () => {
+    if (chess.current.turn() === 'b') {
+      const moves = chess.current.moves();
+      if (moves.length > 0) {
+        const randomMove = moves[Math.floor(Math.random() * moves.length)];
+        const moveResult = chess.current.move(randomMove);
+
+        if (moveResult.captured) {
+          captureAudio.play();
+        } else {
+          moveAudio.play();
+        }
+
+        if (chess.current.isCheckmate()) {
+          alert('Checkmate');
+        } else if (chess.current.isStalemate()) {
+          alert('Stalemate');
+        } else if (chess.current.isCheck()) {
+          alert('Check');
+        }
+
+        setFromSquare(moveResult.from);
+        setToSquare(moveResult.to);
+      }
+    }
+  };
+
   return (
     <div className="App">
+      <button onClick={handleAIMove}>AI Move</button>
       <div
         className="chess-board"
         ref={boardRef}
@@ -296,7 +308,6 @@ function App() {
                   x1={start.x}
                   y1={start.y}
                   x2={end.x}
-                  y2={end.y}
                   stroke="#15781B"
                   strokeWidth="2"
                   strokeLinecap="round"
@@ -318,7 +329,7 @@ function App() {
         </div>
       </div>
     </div>
-  );  
+  );
 }
 
 export default App;
