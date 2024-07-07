@@ -284,7 +284,6 @@ function App() {
 
   return (
     <div className="App">
-      <button onClick={handleAIMove}>AI Move</button>
       <div
         className="chess-board"
         ref={boardRef}
@@ -293,8 +292,8 @@ function App() {
         onMouseUp={handleMouseUp}
       >
         <div className="board">
-          {rows.map((row, rowIndex) =>
-            columns.map((col, colIndex) => {
+          {rows.map((row) =>
+            columns.map((col) => {
               return renderSquare(row, col);
             })
           )}
@@ -308,7 +307,7 @@ function App() {
                   x1={start.x}
                   y1={start.y}
                   x2={end.x}
-                  stroke="#15781B"
+                  stroke="#15781B" // green
                   strokeWidth="2"
                   strokeLinecap="round"
                 />
