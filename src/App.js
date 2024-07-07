@@ -284,15 +284,50 @@ function App() {
   };
 
   return (
-    <div className="app">
-      <div className="board" ref={boardRef} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onContextMenu={handleRightClick}>
-        {rows.map(row => (
-          <div key={row} className="board-row">
-            {columns.map(col => renderSquare(row, col))}
-          </div>
-        ))}
+    <div className="App">
+      <div
+        className="chess-board"
+        ref={boardRef}
+        onContextMenu={handleRightClick}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+        <div className="board">
+          {rows.map((row) =>
+            columns.map((col) => {
+              return renderSquare(row, col);
+            })
+          )}
+          <svg className="line-overlay">
+            {lines.map((line, index) => {
+              const start = getSquareCenter(line.start);
+              const end = getSquareCenter(line.end);
+              return (
+                <line
+                  key={index}
+                  x1={start.x}
+                  y1={start.y}
+                  x2={end.x}
+                  stroke="#15781B" // green
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              );
+            })}
+            {currentLine && currentLine.start !== currentLine.end && (
+              <line
+                x1={getSquareCenter(currentLine.start).x}
+                y1={getSquareCenter(currentLine.start).y}
+                x2={getSquareCenter(currentLine.end).x}
+                y2={getSquareCenter(currentLine.end).y}
+                stroke="#15781B"
+                strokeWidth="6"
+                strokeLinecap="round"
+              />
+            )}
+          </svg>
+        </div>
       </div>
-      <MovesTable moves={moves} currentMoveIndex={currentMoveIndex} />
     </div>
   );
 }
