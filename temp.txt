@@ -21,14 +21,17 @@ function App() {
   const boardRef = useRef(null);
   const moveAudio = new Audio(moveSound);
   const captureAudio = new Audio(captureSound);
+
   const rows = [8, 7, 6, 5, 4, 3, 2, 1];
   const columns = ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h'];
+
   const initialOverlayState = rows.reduce((acc, row) => {
     columns.forEach(col => {
       acc[`${col}${row}`] = false;
     });
     return acc;
   }, {});
+
   const [overlay, setOverlay] = useState(initialOverlayState);
   const [lines, setLines] = useState([]);
   const [dragging, setDragging] = useState(false);
@@ -39,20 +42,11 @@ function App() {
   const [toSquare, setToSquare] = useState(null);
   const [potentialCaptures, setPotentialCaptures] = useState([]);
   const [moves, setMoves] = useState([]);
-  const [currentMoveIndex, setCurrentMoveIndex] = useState(-1);
+  const [currentMoveIndex, setCurrentMoveIndex] = useState(0);
+
   const pieceImages = {
-    'w-p': whitePawn,
-    'w-n': whiteKnight,
-    'w-b': whiteBishop,
-    'w-r': whiteRook,
-    'w-q': whiteQueen,
-    'w-k': whiteKing,
-    'b-p': blackPawn,
-    'b-n': blackKnight,
-    'b-b': blackBishop,
-    'b-r': blackRook,
-    'b-q': blackQueen,
-    'b-k': blackKing,
+    'w-p': whitePawn, 'w-n': whiteKnight, 'w-b': whiteBishop, 'w-r': whiteRook, 'w-q': whiteQueen, 'w-k': whiteKing,
+    'b-p': blackPawn, 'b-n': blackKnight, 'b-b': blackBishop, 'b-r': blackRook, 'b-q': blackQueen, 'b-k': blackKing,
   };
 
   const handleRightClick = (e) => {
@@ -62,31 +56,33 @@ function App() {
   const handleSquareClick = (square) => {
     if (legalMoves.includes(square)) {
       const moveOptions = { from: sourceSquare, to: square };
+      
       const piece = chess.current.get(sourceSquare);
       if (piece && piece.type === 'p' && (square[1] === '8' || square[1] === '1')) {
         moveOptions.promotion = 'q';
       }
+
       const moveResult = chess.current.move(moveOptions);
-      if (moveResult) {
-        if (moveResult.captured) {
-          captureAudio.play();
-        } else {
-          moveAudio.play();
-        }
-        setMoves(prevMoves => [...prevMoves.slice(0, currentMoveIndex + 1), moveResult]);
-        setCurrentMoveIndex(prevIndex => prevIndex + 1);
-        if (chess.current.isCheckmate()) {
-          alert('Checkmate');
-        } else if (chess.current.isStalemate()) {
-          alert('Stalemate');
-        } else if (chess.current.isCheck()) {
-          alert('Check');
-        }
-        setFromSquare(sourceSquare);
-        setToSquare(square);
-        handleAIMove();
+      
+      if (moveResult.captured) {
+        captureAudio.play();
+      } else {
+        moveAudio.play();
       }
+
+      if (chess.current.isCheckmate()) {
+        alert('Checkmate');
+      } else if (chess.current.isStalemate()) {
+        alert('Stalemate');
+      } else if (chess.current.isCheck()) {
+        alert('Check');
+      }
+
+      setFromSquare(sourceSquare);
+      setToSquare(square);
+      handleAIMove();
     }
+  
     setLegalMoves([]);
     setSourceSquare(null);
     setOverlay(initialOverlayState);
@@ -130,7 +126,10 @@ function App() {
       e.preventDefault();
       setDragging(true);
       setCurrentLine({ start: square, end: square });
-      setOverlay(prevOverlay => ({ ...prevOverlay, [square]: !prevOverlay[square] }));
+      setOverlay(prevOverlay => ({
+        ...prevOverlay,
+        [square]: !prevOverlay[square]
+      }));
       setLegalMoves([]);
       setPotentialCaptures([]);
       setSourceSquare(null);
@@ -159,7 +158,10 @@ function App() {
         if (currentLine) {
           setCurrentLine({ ...currentLine, end: endSquare });
           if (currentLine.start !== endSquare) {
-            setOverlay(prevOverlay => ({ ...prevOverlay, [currentLine.start]: false }));
+            setOverlay(prevOverlay => ({
+              ...prevOverlay,
+              [currentLine.start]: false
+            }));
           }
         }
       }
@@ -169,7 +171,10 @@ function App() {
   const getSquareCenter = (square) => {
     const col = columns.indexOf(square[0]);
     const row = 8 - parseInt(square[1]);
-    return { x: col * 50 + 25, y: row * 50 + 25 };
+    return {
+      x: col * 50 + 25,
+      y: row * 50 + 25
+    };
   };
 
   const isLegalMove = (square) => {
@@ -197,8 +202,9 @@ function App() {
     if (piece) {
       return (
         <img
-          src={pieceImages[`${piece.color}-${piece.type}`]}
-          alt=""
+          src={pieceImages[piece.color + '-' + piece.type]}
+          alt={piece}
+          className="chess-piece"
           onClick={(e) => handlePieceClick(e, square)}
           draggable="true"
           onDragStart={(e) => handleDragStart(e, square)}
@@ -217,82 +223,133 @@ function App() {
     const labelColor = isLightSquare ? 'label-dark' : 'label-light';
     const isSelected = sourceSquare === square;
     let squareClass = `square ${baseClass} ${isSelected ? 'selected' : ''}`;
+    
     if (square === fromSquare || square === toSquare) {
       squareClass += ` moved`;
     }
+
     return (
       <div
         key={square}
         className={squareClass}
-        onClick={() => handleSquareClick(square)}
         onMouseDown={(e) => handleMouseDown(e, square)}
-        onMouseUp={handleMouseUp}
-        onMouseMove={handleMouseMove}
+        onClick={() => handleSquareClick(square)}
+        onDragOver={(e) => handleDragOver(e, square)}
+        onDrop={(e) => handleDrop(e, square)}
       >
+        {(row === 1 && col === 'h') && (
+          <>
+            <span className={`label bottom ${labelColor}`}>{col}</span>
+            <span className={`label right ${labelColor}`}>{row}</span>
+          </>
+        )}
+        {(row === 1 && col !== 'h') && (
+          <span className={`label bottom ${labelColor}`}>{col}</span>
+        )}
+        {(col === 'h' && row !== 1) && (
+          <span className={`label right ${labelColor}`}>{row}</span>
+        )}
         {renderPiece(square)}
-        <div className={`label ${labelColor}`}>{col}{row}</div>
+        {overlay[square] && <div className="circle-overlay"></div>}
+        {isLegalMove(square) && <div className="legal-move-overlay"></div>}
+        {potentialCaptures.includes(square) && <div className="potential-capture-overlay"></div>}
       </div>
     );
   };
 
   const handleAIMove = () => {
-    // AI move logic here
-    // Example:
-    const aiMove = chess.current.move(chess.current.moves()[0]);
-    if (aiMove) {
-      chess.current.move(aiMove);
-      setMoves(prevMoves => [...prevMoves, aiMove]);
-      setCurrentMoveIndex(prevIndex => prevIndex + 1);
-      if (chess.current.isCheckmate()) {
-        alert('Checkmate');
-      } else if (chess.current.isStalemate()) {
-        alert('Stalemate');
-      } else if (chess.current.isCheck()) {
-        alert('Check');
+    if (chess.current.turn() === 'b') {
+      const moves = chess.current.moves();
+      if (moves.length > 0) {
+        const randomMove = moves[Math.floor(Math.random() * moves.length)];
+        const moveResult = chess.current.move(randomMove);
+
+        if (moveResult.captured) {
+          captureAudio.play();
+        } else {
+          moveAudio.play();
+        }
+
+        if (chess.current.isCheckmate()) {
+          alert('Checkmate');
+        } else if (chess.current.isStalemate()) {
+          alert('Stalemate');
+        } else if (chess.current.isCheck()) {
+          alert('Check');
+        }
+
+        setFromSquare(moveResult.from);
+        setToSquare(moveResult.to);
       }
     }
   };
 
-  const MovesTable = ({ moves, currentMoveIndex }) => {
-    return (
-      <div className="moves-table">
-        <table>
-          <thead>
-            <tr>
-              <th>#</th>
-              <th>White</th>
-              <th>Black</th>
+  const renderMoveList = () => (
+    <div className="move-list">
+      <table>
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Move</th>
+          </tr>
+        </thead>
+        <tbody>
+          {moves.map((move, index) => (
+            <tr key={index} className={index === currentMoveIndex ? 'current-move' : ''}>
+              <td>{index + 1}</td>
+              <td>{move.san}</td>
             </tr>
-          </thead>
-          <tbody>
-            {moves.reduce((rows, move, index) => {
-              if (index % 2 === 0) {
-                rows.push(
-                  <tr key={index / 2} className={index <= currentMoveIndex ? 'current-move' : ''}>
-                    <td>{index / 2 + 1}</td>
-                    <td>{move.san}</td>
-                    <td>{index + 1 < moves.length ? moves[index + 1].san : ''}</td>
-                  </tr>
-                );
-              }
-              return rows;
-            }, [])}
-          </tbody>
-        </table>
-      </div>
-    );
-  };
+          ))}
+        </tbody>
+      </table>
+    </div>
+  );  
 
   return (
-    <div className="app">
-      <div className="board" ref={boardRef} onMouseMove={handleMouseMove} onMouseUp={handleMouseUp} onContextMenu={handleRightClick}>
-        {rows.map(row => (
-          <div key={row} className="board-row">
-            {columns.map(col => renderSquare(row, col))}
-          </div>
-        ))}
+    <div className="App">
+      <div
+        className="chess-board"
+        ref={boardRef}
+        onContextMenu={handleRightClick}
+        onMouseMove={handleMouseMove}
+        onMouseUp={handleMouseUp}
+      >
+        <div className="board">
+          {rows.map((row) =>
+            columns.map((col) => {
+              return renderSquare(row, col);
+            })
+          )}
+          <svg className="line-overlay">
+            {lines.map((line, index) => {
+              const start = getSquareCenter(line.start);
+              const end = getSquareCenter(line.end);
+              return (
+                <line
+                  key={index}
+                  x1={start.x}
+                  y1={start.y}
+                  x2={end.x}
+                  stroke="#15781B" // green
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                />
+              );
+            })}
+            {currentLine && currentLine.start !== currentLine.end && (
+              <line
+                x1={getSquareCenter(currentLine.start).x}
+                y1={getSquareCenter(currentLine.start).y}
+                x2={getSquareCenter(currentLine.end).x}
+                y2={getSquareCenter(currentLine.end).y}
+                stroke="#15781B"
+                strokeWidth="6"
+                strokeLinecap="round"
+              />
+            )}
+          </svg>
+        </div>
       </div>
-      <MovesTable moves={moves} currentMoveIndex={currentMoveIndex} />
     </div>
   );
 }
