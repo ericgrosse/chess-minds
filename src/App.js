@@ -1,4 +1,4 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import './App.scss';
 import whitePawn from './images/white-pawn.svg';
 import whiteKnight from './images/white-knight.svg';
@@ -55,6 +55,12 @@ function App() {
     'b-k': blackKing,
   };
 
+  useEffect(() => {
+    if (chess.current.turn() === 'b') {
+      handleAIMove();
+    }
+  }, [currentMoveIndex]);
+
   const handleRightClick = (e) => {
     e.preventDefault();
   };
@@ -84,7 +90,6 @@ function App() {
         }
         setFromSquare(sourceSquare);
         setToSquare(square);
-        handleAIMove();
       }
     }
     setLegalMoves([]);
@@ -236,19 +241,22 @@ function App() {
   };
 
   const handleAIMove = () => {
-    // AI move logic here
-    // Example:
-    const aiMove = chess.current.move(chess.current.moves()[0]);
-    if (aiMove) {
-      chess.current.move(aiMove);
-      setMoves(prevMoves => [...prevMoves, aiMove]);
-      setCurrentMoveIndex(prevIndex => prevIndex + 1);
-      if (chess.current.isCheckmate()) {
-        alert('Checkmate');
-      } else if (chess.current.isStalemate()) {
-        alert('Stalemate');
-      } else if (chess.current.isCheck()) {
-        alert('Check');
+    if (chess.current.turn() === 'b') { // Assuming AI plays as black
+      const moves = chess.current.moves();
+      if (moves.length > 0) {
+        const randomMove = moves[Math.floor(Math.random() * moves.length)];
+        const aiMove = chess.current.move(randomMove);
+        if (aiMove) {
+          setMoves(prevMoves => [...prevMoves, aiMove]);
+          setCurrentMoveIndex(prevIndex => prevIndex + 1);
+          if (chess.current.isCheckmate()) {
+            alert('Checkmate');
+          } else if (chess.current.isStalemate()) {
+            alert('Stalemate');
+          } else if (chess.current.isCheck()) {
+            alert('Check');
+          }
+        }
       }
     }
   };
